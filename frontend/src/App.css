@@ -1,0 +1,22 @@
+/* Target the whole scrollbar */
+::-webkit-scrollbar {
+    width: 12px; /* Set the width of the scrollbar */
+  }
+  
+  /* The scrollbar track */
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1; /* Background of the track */
+    border-radius: 10px;
+  }
+  
+  /* The scrollbar handle */
+  ::-webkit-scrollbar-thumb {
+    background: #888; /* Color of the scrollbar handle */
+    border-radius: 10px;
+  }
+  
+  /* When hovering over the scrollbar */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555; /* Darker on hover */
+  }
+  
