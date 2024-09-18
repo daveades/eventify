@@ -1,9 +1,16 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from models import db, Ticket, Event
-import uuid
+import random
 
 tickets_bp = Blueprint('tickets', __name__)
+
+# Function to generate a unique random integer ID
+def generate_unique_ticket_id():
+    while True:
+        ticket_id = random.randint(100000, 999999)  # Generate a random 6-digit number
+        if not Ticket.query.get(ticket_id):
+            return ticket_id
 
 # Route to retrieve all tickets purchased by the authenticated user
 @tickets_bp.route('/tickets', methods=['GET'])
@@ -14,7 +21,7 @@ def get_tickets():
     return jsonify([ticket.to_dict() for ticket in tickets])
 
 # Route to retrieve a specific ticket by ID
-@tickets_bp.route('/tickets/<string:id>', methods=['GET'])
+@tickets_bp.route('/tickets/<int:id>', methods=['GET'])
 @jwt_required()
 def get_ticket(id):
     current_user_email = get_jwt_identity()
@@ -24,7 +31,7 @@ def get_ticket(id):
     return jsonify(ticket.to_dict())
 
 # Route to update a specific ticket by ID
-@tickets_bp.route('/tickets/<string:id>', methods=['PUT'])
+@tickets_bp.route('/tickets/<int:id>', methods=['PUT'])
 @jwt_required()
 def update_ticket(id):
     ticket = Ticket.query.get(id)
@@ -36,7 +43,7 @@ def update_ticket(id):
     return jsonify(ticket.to_dict())
 
 # Route to delete a specific ticket by ID
-@tickets_bp.route('/tickets/<string:id>', methods=['DELETE'])
+@tickets_bp.route('/tickets/<int:id>', methods=['DELETE'])
 @jwt_required()
 def delete_ticket(id):
     ticket = Ticket.query.get(id)
@@ -61,7 +68,8 @@ def purchase_ticket():
 
     tickets_purchased = []
     for _ in range(num_tickets):
-        ticket = Ticket(id=str(uuid.uuid4()), event_id=event_id, email=user_email)
+        ticket_id = generate_unique_ticket_id()
+        ticket = Ticket(id=ticket_id, event_id=event_id, email=user_email)
         db.session.add(ticket)
         tickets_purchased.append(ticket)
 
