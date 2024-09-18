@@ -1,45 +1,43 @@
 from flask import Blueprint, request, jsonify
-import uuid  # Import the uuid module
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from models import db, Event
 
 events_bp = Blueprint('events', __name__)
-
-# In-memory data structure to store events
-events = []
 
 # Route to retrieve all events
 @events_bp.route('/events', methods=['GET'])
 def get_events():
-    return jsonify(events)
+    events = Event.query.all()
+    return jsonify([event.to_dict() for event in events])
 
 # Route to create a new event
 @events_bp.route('/events', methods=['POST'])
+@jwt_required()
 def create_event():
-    event = request.json
-    event['id'] = str(uuid.uuid4())  # Generate a UUID for the event ID and convert it to a string
-    events.append(event)
-    return jsonify(event), 201
+    current_user = get_jwt_identity()
+    data = request.json
+    event = Event(name=data['name'], date=data['date'], user_id=current_user['id'])
+    db.session.add(event)
+    db.session.commit()
+    return jsonify(event.to_dict()), 201
 
-# Route to retrieve a specific event by ID
-@events_bp.route('/events/<string:id>', methods=['GET'])
-def get_event(id):
-    event = next((event for event in events if event['id'] == id), None)
-    if event is None:
-        return jsonify({'error': 'Event not found'}), 404
-    return jsonify(event)
+# Route to retrieve events created by the current user
+@events_bp.route('/my_events', methods=['GET'])
+@jwt_required()
+def get_my_events():
+    current_user = get_jwt_identity()
+    events = Event.query.filter_by(user_id=current_user['id']).all()
+    return jsonify([event.to_dict() for event in events])
 
 # Route to update a specific event by ID
-@events_bp.route('/events/<string:id>', methods=['PUT'])
+@events_bp.route('/events/<int:id>', methods=['PUT'])
+@jwt_required()
 def update_event(id):
-    event = next((event for event in events if event['id'] == id), None)
+    event = Event.query.get(id)
     if event is None:
         return jsonify({'error': 'Event not found'}), 404
-    updated_event = request.json
-    event.update(updated_event)
-    return jsonify(event)
-
-# Route to delete a specific event by ID
-@events_bp.route('/events/<string:id>', methods=['DELETE'])
-def delete_event(id):
-    global events
-    events = [event for event in events if event['id'] != id]
-    return '', 204
+    data = request.json
+    event.name = data['name']
+    event.date = data['date']
+    db.session.commit()
+    return jsonify(event.to_dict())

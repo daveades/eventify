@@ -8,20 +8,23 @@ auth_bp = Blueprint('auth', __name__)
 # Initialize JWT
 jwt = JWTManager()
 
-# Route to register a new user
 @auth_bp.route('/register', methods=['POST'])
 def register():
     data = request.json
     username = data.get('username')
+    email = data.get('email')  # Get email from request
     password = data.get('password')
 
-    if not username or not password:
-        return jsonify({'error': 'Username and password are required'}), 400
+    if not username or not email or not password:
+        return jsonify({'error': 'Username, email, and password are required'}), 400
 
     if User.query.filter_by(username=username).first():
         return jsonify({'error': 'Username already exists'}), 400
 
-    user = User(username=username)
+    if User.query.filter_by(email=email).first():
+        return jsonify({'error': 'Email already exists'}), 400
+
+    user = User(username=username, email=email)  # Include email in user creation
     user.set_password(password)
     db.session.add(user)
     db.session.commit()
@@ -36,7 +39,7 @@ def login():
 
     user = User.query.filter_by(username=username).first()
     if user and user.check_password(password):
-        access_token = create_access_token(identity=username)
+        access_token = create_access_token(identity={'username': username, 'email': user.email, 'id': user.id})
         return jsonify({'access_token': access_token}), 200
 
     return jsonify({'error': 'Invalid username or password'}), 401
@@ -46,4 +49,4 @@ def login():
 @jwt_required()
 def protected():
     current_user = get_jwt_identity()
-    return jsonify({'message': f'Hello, {current_user}!'}), 200
+    return jsonify({'message': f'Hello, {current_user["username"]}!', 'email': current_user['email']}), 200
