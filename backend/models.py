@@ -20,7 +20,14 @@ class Event(db.Model):
     date = db.Column(db.String(10), nullable=False)
 
 class Ticket(db.Model):
-    id = db.Column(db.String(36), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)  # Auto-incremented integer ID
     event_id = db.Column(db.String(36), db.ForeignKey('event.id'), nullable=False)
     email = db.Column(db.String(120), nullable=False)
     event = db.relationship('Event', backref=db.backref('tickets', lazy=True))
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'event_id': self.event_id,
+            'email': self.email
+        }

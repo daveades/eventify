@@ -1,16 +1,8 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from models import db, Ticket, Event
-import random
 
 tickets_bp = Blueprint('tickets', __name__)
-
-# Function to generate a unique random integer ID
-def generate_unique_ticket_id():
-    while True:
-        ticket_id = random.randint(100000, 999999)  # Generate a random 6-digit number
-        if not Ticket.query.get(ticket_id):
-            return ticket_id
 
 # Route to retrieve all tickets purchased by the authenticated user
 @tickets_bp.route('/tickets', methods=['GET'])
@@ -68,8 +60,7 @@ def purchase_ticket():
 
     tickets_purchased = []
     for _ in range(num_tickets):
-        ticket_id = generate_unique_ticket_id()
-        ticket = Ticket(id=ticket_id, event_id=event_id, email=user_email)
+        ticket = Ticket(event_id=event_id, email=user_email)
         db.session.add(ticket)
         tickets_purchased.append(ticket)
 
