@@ -1,27 +1,29 @@
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from models import db, Ticket, Event
 import uuid
 
 tickets_bp = Blueprint('tickets', __name__)
 
-# Route to retrieve all tickets
+# Route to retrieve all tickets purchased by the authenticated user
 @tickets_bp.route('/tickets', methods=['GET'])
 @jwt_required()
 def get_tickets():
-    tickets = Ticket.query.all()
+    current_user_email = get_jwt_identity()
+    tickets = Ticket.query.filter_by(email=current_user_email).all()
     return jsonify([ticket.to_dict() for ticket in tickets])
 
 # Route to retrieve a specific ticket by ID
 @tickets_bp.route('/tickets/<string:id>', methods=['GET'])
 @jwt_required()
 def get_ticket(id):
+    current_user_email = get_jwt_identity()
     ticket = Ticket.query.get(id)
-    if ticket is None:
-        return jsonify({'error': 'Ticket not found'}), 404
+    if ticket is None or ticket.email != current_user_email:
+        return jsonify({'error': 'Ticket not found or unauthorized'}), 404
     return jsonify(ticket.to_dict())
 
-# Route to update email of a specific ticket by ID
+# Route to update a specific ticket by ID
 @tickets_bp.route('/tickets/<string:id>', methods=['PUT'])
 @jwt_required()
 def update_ticket(id):
