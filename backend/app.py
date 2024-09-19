@@ -4,6 +4,7 @@ from flask_migrate import Migrate
 from events import events_bp
 from tickets import tickets_bp
 from auth import auth_bp, jwt
+from models import db
 import os
 from dotenv import load_dotenv
 
@@ -20,7 +21,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize SQLAlchemy and Flask-Migrate
-db = SQLAlchemy(app)
+db.init_app(app)
 migrate = Migrate(app, db)
 
 # Initialize JWT with flask app
