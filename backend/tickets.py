@@ -13,6 +13,7 @@ def get_tickets():
     tickets = Ticket.query.filter_by(email=current_user_email).all()
     return jsonify([ticket.to_dict() for ticket in tickets])
 
+# Retrieve a ticket by ID
 @tickets_bp.route('/tickets/<int:id>', methods=['GET'])
 @jwt_required()
 def get_ticket(id):
@@ -35,16 +36,16 @@ def update_ticket(id):
     db.session.commit()
     return jsonify(ticket.to_dict())
 
-# # Route to delete a specific ticket by ID
-# @tickets_bp.route('/tickets/<int:id>', methods=['DELETE'])
-# @jwt_required()
-# def delete_ticket(id):
-#     ticket = Ticket.query.get(id)
-#     if ticket is None:
-#         return jsonify({'error': 'Ticket not found'}), 404
-#     db.session.delete(ticket)
-#     db.session.commit()
-#     return '', 204
+# Route to delete a specific ticket by ID
+@tickets_bp.route('/tickets/<int:id>', methods=['DELETE'])
+@jwt_required()
+def delete_ticket(id):
+    ticket = Ticket.query.get(id)
+    if ticket is None:
+        return jsonify({'error': 'Ticket not found'}), 404
+    db.session.delete(ticket)
+    db.session.commit()
+    return '', 204
 
 # Route to purchase tickets for an event
 @tickets_bp.route('/purchase_ticket', methods=['POST'])
