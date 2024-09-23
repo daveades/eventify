@@ -33,4 +33,5 @@ app.register_blueprint(tickets_bp)
 app.register_blueprint(auth_bp)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    port = int(os.getenv('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=True)
