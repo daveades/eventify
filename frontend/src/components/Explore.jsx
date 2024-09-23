@@ -11,7 +11,7 @@ export default function Explore() {
 
     const fetchEvents = async () => {
         try {
-            const response = await fetch('https://api.example.com/events');
+            const response = await fetch('https://eventify-0i10.onrender.com/events');
             const data = await response.json();
             setEvents(data);
         } catch (error) {
@@ -39,11 +39,11 @@ export default function Explore() {
             ) : (
                 // Map and display events
                 <div className="space-y-4">
-                    {events.map((event, index) => (
-                        <div key={index} className="p-4 bg-white rounded shadow-md">
-                            <h2 className="text-lg font-bold">{event.title}</h2>
+                    {events.map((event) => (
+                        <div key={event.id} className="p-4 bg-white rounded shadow-md">
+                            <h2 className="text-lg font-bold">{event.name}</h2>
                             <p className="text-sm text-gray-600">{event.date}</p>
-                            <p className="text-gray-800">{event.description}</p>
+                            <p className="text-gray-800">Created by User ID: {event.user_id}</p>
                         </div>
                     ))}
                 </div>

@@ -11,25 +11,25 @@ export default function SignUp() {
     const handleSignUp = async (e) => {
         e.preventDefault();
 
-        // Example validation (you can customize this)
+        // Validate input fields
         if (!username || !email || !password) {
             setError('All fields are required');
             return;
         }
 
         try {
-            // Mock signup process (replace with your API call)
-            const response = await fetch('https://api.example.com/signup', {
+            const response = await fetch('https://eventify-0i10.onrender.com/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, email, password })
+                body: JSON.stringify({ username, email, password }),
             });
 
             if (response.ok) {
-                // Navigate to home page after successful signup
-                navigate('/');
+                // Navigate to the login page or home page after successful signup
+                navigate('/login'); // Adjust the redirect as needed
             } else {
-                setError('Signup failed');
+                const errorData = await response.json();
+                setError(errorData.error || 'Signup failed');
             }
         } catch (error) {
             setError('An error occurred during signup');
