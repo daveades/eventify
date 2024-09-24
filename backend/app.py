@@ -1,6 +1,7 @@
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
+# from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from flask_cors import CORS
 from events import events_bp
 from tickets import tickets_bp
 from auth import auth_bp, jwt
@@ -12,6 +13,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
+
+# Enable CORS for all routes
+CORS(app)
 
 # Configure JWT
 app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
