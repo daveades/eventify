@@ -42,7 +42,7 @@ export default function Overview() {
 
     const fetchEvents = async () => {
         try {
-            const response = await fetch('https://eventify-0i10.onrender.com/my_events', {
+            const response = await fetch('https://eventify-72np.onrender.com/my_events', {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('jwt_token')}`, // Adjust this to your JWT storage method
                 },
@@ -58,7 +58,7 @@ export default function Overview() {
 
     const createEvent = async () => {
         try {
-            const response = await fetch('https://eventify-0i10.onrender.com/events', {
+            const response = await fetch('https://eventify-72np.onrender.com/events', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

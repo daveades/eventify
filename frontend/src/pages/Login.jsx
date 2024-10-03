@@ -17,7 +17,7 @@ export default function Login() {
 
         setLoading(true); // Set loading to true
         try {
-            const response = await fetch('https://eventify-0i10.onrender.com/login', {
+            const response = await fetch('https://eventify-72np.onrender.com/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, password }),

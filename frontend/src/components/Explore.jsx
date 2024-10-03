@@ -11,7 +11,7 @@ export default function Explore() {
 
     const fetchEvents = async () => {
         try {
-            const response = await fetch('https://eventify-0i10.onrender.com/events');
+            const response = await fetch('https://eventify-72np.onrender.com/events');
             const data = await response.json();
             setEvents(data);
         } catch (error) {
